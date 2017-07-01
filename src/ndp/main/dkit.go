@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -14,29 +15,49 @@ import (
 )
 
 func main() {
-	if len(os.Args)<3{
-		fmt.Println("invalid param ")
-		fmt.Println("cmd {project} {version}")
+	cmdParam, err := parseCmdParam()
+	if err != nil {
+		log.Fatal(err)
 		return
+
 	}
-	var pName string=os.Args[1]
-	var version string = os.Args[2]
-	log.Println("Project:"+ pName+"; Version:"+ version)
-
-	var workDir,_ =os.Getwd()
-	var configPath= workDir +"\\"+pName+".json"
-	log.Println("using config file :"+configPath)
-
-	config := parseConfig(configPath)
+	config := parseConfig(cmdParam.CfgFileName)
+	//todo 多线程
 	for _, server := range config.Servers {
-		log.Println(server.Host)
-		log.Println(version)
-		deploy(version, server)
+		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
+		deploy(cmdParam.Version, server)
+		log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
 	}
 }
+func parseCmdParam() (model.CmdParam, error) {
+	fmt.Println(len(os.Args))
+	if len(os.Args) < 3 {
 
-func parseConfig(path string) (*model.Config) {
-	fd, error := ioutil.ReadFile(path)
+		fmt.Println("invalid param!")
+		fmt.Println("cmd {project} {version} [sourceType]")
+		fmt.Println("sourceType :")
+		fmt.Println("	1 :公网ftp，默认")
+		fmt.Println("	2 :局域网ftp")
+		fmt.Println("	3 :本地zip文件")
+		return model.CmdParam{}, errors.New("invalid cmd  param!")
+	}
+	var cmdParam model.CmdParam
+	cmdParam.CfgFileName = os.Args[1]
+	cmdParam.Version = os.Args[2]
+	if len(os.Args) < 4 {
+		cmdParam.SourceType = "1"
+	} else {
+		cmdParam.SourceType = os.Args[3]
+	}
+	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json; Version:" + cmdParam.Version + ";SourceType:" + string(cmdParam.SourceType))
+	return cmdParam, nil
+}
+
+func parseConfig(cfgFileName string) (*model.Config) {
+	workDir, _ := os.Getwd()
+	cfgFilePath := workDir + "\\" + cfgFileName + ".json"
+	log.Println("using config file :" + cfgFilePath)
+	fd, error := ioutil.ReadFile(cfgFilePath)
 	if error != nil {
 		panic(error)
 	}
@@ -50,7 +71,7 @@ func deploy(version string, server model.ServerInfo) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	localFilePath := "e:/"+version+".zip"
+	localFilePath := "e:/" + version + ".zip"
 	upload(sshClient, localFilePath, server.WorkDir)
 	executeCmd(sshClient, server.WorkDir, localFilePath)
 }
