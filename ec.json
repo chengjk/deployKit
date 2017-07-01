@@ -1,0 +1,19 @@
+{
+  "Name":"ec-retargeting",
+  "Servers": [
+    {
+      "Ip": "172.30.10.82",
+      "Port": 22,
+      "Username": "root",
+      "Password": "12354",
+      "WorkDir": "/tmp/jacky"
+    },
+    {
+      "Ip": "172.30.10.83",
+      "Port": 22,
+      "Username": "root",
+      "Password": "12354",
+      "WorkDir": "/tmp/jacky"
+    }
+  ]
+}

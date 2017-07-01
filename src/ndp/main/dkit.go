@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
@@ -13,36 +14,45 @@ import (
 )
 
 func main() {
-	parseConfig()
-	//connectSever()
+	if len(os.Args)<3{
+		fmt.Println("invalid param ")
+		fmt.Println("cmd {project} {version}")
+		return
+	}
+	var pName string=os.Args[1]
+	var version string = os.Args[2]
+	log.Println("Project:"+ pName+"; Version:"+ version)
+
+	var workDir,_ =os.Getwd()
+	var configPath= workDir +"\\"+pName+".json"
+	log.Println("using config file :"+configPath)
+
+	config := parseConfig(configPath)
+	for _, server := range config.Servers {
+		log.Println(server.Host)
+		log.Println(version)
+		deploy(version, server)
+	}
 }
 
-func parseConfig() {
-	fd, error := ioutil.ReadFile("E:/github/dk/src/config.json")
+func parseConfig(path string) (*model.Config) {
+	fd, error := ioutil.ReadFile(path)
 	if error != nil {
 		panic(error)
 	}
-	log.Print(string(fd))
-	var connInfo = &model.ConnectInfo{}
-	json.Unmarshal(fd, connInfo)
-	println(connInfo.Host)
+	var config = &model.Config{}
+	json.Unmarshal(fd, config)
+	return config
 }
 
-func connectSever() {
-	var (
-		host          = "172.30.10.83"
-		port          = 22
-		username      = "root"
-		pwd           = "12354"
-		localFilePath = "e:/1.zip"
-		remoteDir     = "/tmp/jackytest/"
-	)
-	sshClient, err := common.Connect(username, pwd, host, port)
+func deploy(version string, server model.ServerInfo) {
+	sshClient, err := common.Connect(server.Username, server.Password, server.Host, server.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	upload(sshClient, localFilePath, remoteDir)
-	executeCmd(sshClient, remoteDir, localFilePath)
+	localFilePath := "e:/"+version+".zip"
+	upload(sshClient, localFilePath, server.WorkDir)
+	executeCmd(sshClient, server.WorkDir, localFilePath)
 }
 func executeCmd(sshClient *ssh.Client, basePath string, localFilePath string) {
 	// create session
@@ -54,7 +64,7 @@ func executeCmd(sshClient *ssh.Client, basePath string, localFilePath string) {
 	defer session.Close()
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
-	session.Run("cd " + basePath + ";unzip " + path.Base(localFilePath))
+	session.Run("cd " + basePath + ";unzip -o " + path.Base(localFilePath))
 	log.Println("unzip finished！")
 }
 

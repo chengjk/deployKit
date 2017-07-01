@@ -1,15 +1,13 @@
 package model
 
-
-
-type ConnectInfo struct {
-	Host     string  `json:"Host"`
-	Port     string  `json:"Port"`
+type ServerInfo struct {
+	Host     string  `json:"Ip"`
+	Port     int  `json:"Port"`
 	Username string  `json:"Username"`
 	Password string  `json:"Password"`
+	WorkDir  string `json:"WorkDir"`
 }
-type PathInfo struct {
-	Local     string  `json:"host"`
-	Remote     string  `json:"port"`
+type Config struct {
+	Name string  `json:"Name"`
+	Servers []ServerInfo `json:"Servers"`
 }
-
