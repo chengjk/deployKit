@@ -2,8 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+	"flag"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
@@ -25,31 +24,37 @@ func main() {
 	//todo 多线程
 	for _, server := range config.Servers {
 		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
-		deploy(cmdParam.Version, server)
+		deploy(cmdParam, server)
 		log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
 	}
 }
 func parseCmdParam() (model.CmdParam, error) {
-	fmt.Println(len(os.Args))
-	if len(os.Args) < 3 {
+	cfgFileName := flag.String("name", "", "project config file name. e.g. ec means ec.json.")
+	version := flag.String("v", "", "target version. e.g. v1.0.0.")
+	url := flag.String("url", "", "ftp url at internet. we will wget at server. e.g. http://test.com/a.zip.")
+	localUrl := flag.String("lurl", "", "ftp url at local lan. we will download zip to disk at first,then upload to server . e.g. http://127.0.0.1/a.zip.")
+	zipPath := flag.String("zf", "", "zip file path. we will upload zip file to server. e.g. /tmp/a.zip.")
+	flag.Parse()
 
-		fmt.Println("invalid param!")
-		fmt.Println("cmd {project} {version} [sourceType]")
-		fmt.Println("sourceType :")
-		fmt.Println("	1 :公网ftp，默认")
-		fmt.Println("	2 :局域网ftp")
-		fmt.Println("	3 :本地zip文件")
-		return model.CmdParam{}, errors.New("invalid cmd  param!")
-	}
 	var cmdParam model.CmdParam
-	cmdParam.CfgFileName = os.Args[1]
-	cmdParam.Version = os.Args[2]
-	if len(os.Args) < 4 {
-		cmdParam.SourceType = "1"
-	} else {
-		cmdParam.SourceType = os.Args[3]
+	cmdParam.CfgFileName = *cfgFileName
+	cmdParam.Version = *version
+	cmdParam.Url = *url
+	cmdParam.LocalUrl = *localUrl
+	cmdParam.ZipPath = *zipPath
+
+	if cmdParam.CfgFileName == "" {
+		log.Fatal("name is required!")
 	}
-	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json; Version:" + cmdParam.Version + ";SourceType:" + string(cmdParam.SourceType))
+	if cmdParam.Version == "" {
+		log.Fatal("version is required!")
+	}
+
+	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.ZipPath == "" {
+		log.Fatal("one of url,lurl or zf is required!")
+	}
+
+	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json; Version:" + cmdParam.Version)
 	return cmdParam, nil
 }
 
@@ -66,16 +71,40 @@ func parseConfig(cfgFileName string) (*model.Config) {
 	return config
 }
 
-func deploy(version string, server model.ServerInfo) {
+func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	sshClient, err := common.Connect(server.Username, server.Password, server.Host, server.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	localFilePath := "e:/" + version + ".zip"
-	upload(sshClient, localFilePath, server.WorkDir)
-	executeCmd(sshClient, server.WorkDir, localFilePath)
+	localFilePath :=  "e:/" + cmdParam.Version + ".zip"
+	//workDir, _ := os.Getwd()
+	//localFilePath :=  workDir+"/upload/" +cmdParam.CfgFileName+ cmdParam.Version + ".zip"
+	var cmds []string
+	if cmdParam.Url != "" {
+		cmds = []string{
+			"wget "+cmdParam.Url,
+			"unzip -o " + path.Base(localFilePath)}
+		executeCmd(sshClient, server.WorkDir, cmds)
+	}
+	if cmdParam.ZipPath != "" {
+		upload(sshClient, localFilePath, server.WorkDir)
+		cmds = []string{"unzip -o " + path.Base(localFilePath)}
+		executeCmd(sshClient, server.WorkDir, cmds)
+
+	}
+	if cmdParam.LocalUrl != "" {
+		//todo download to disk ,upload to server
+		downloadFromLocalRepo(cmdParam.LocalUrl)
+		upload(sshClient, localFilePath, server.WorkDir)
+		cmds = []string{"unzip -o " + path.Base(localFilePath)}
+		executeCmd(sshClient, server.WorkDir, cmds)
+	}
 }
-func executeCmd(sshClient *ssh.Client, basePath string, localFilePath string) {
+func downloadFromLocalRepo(url string) {
+	//todo impl
+
+}
+func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
 	// create session
 	var session *ssh.Session
 	var err error
@@ -85,7 +114,12 @@ func executeCmd(sshClient *ssh.Client, basePath string, localFilePath string) {
 	defer session.Close()
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
-	session.Run("cd " + basePath + ";unzip -o " + path.Base(localFilePath))
+	session.Run("cd " + basePath)
+
+
+	for _, cmd := range cmds {
+		session.Run(cmd)
+	}
 	log.Println("unzip finished！")
 }
 

@@ -1,6 +1,5 @@
 {
   "Name": "ec-retargeting",
-  "Url": "http://test.com/ec{version}.zop",
   "Servers": [
     {
       "Ip": "172.30.10.82",
