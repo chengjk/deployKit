@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"net/http"
@@ -13,7 +13,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	f, err := os.Create(path.Base(url))
+	filePath := path.Join("./upload/" + path.Base(url))
+	os.MkdirAll("./upload", 0777)
+	f, err := os.Create(filePath)
 	if err != nil {
 		panic(err)
 	}

@@ -77,40 +77,40 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	localFilePath :=  "e:/" + cmdParam.Version + ".zip"
-	//workDir, _ := os.Getwd()
-	//localFilePath :=  workDir+"/upload/" +cmdParam.CfgFileName+ cmdParam.Version + ".zip"
 	var cmds []string
 	if cmdParam.Url != "" {
 		cmds = []string{
 			"wget "+cmdParam.Url,
-			"unzip -o " + path.Base(localFilePath)}
+			"unzip -o " + path.Base(cmdParam.Url)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 	}
 	if cmdParam.ZipPath != "" {
+		localFilePath:=cmdParam.ZipPath+"/"+cmdParam.CfgFileName+"/"+cmdParam.Version+".zip"
 		upload(sshClient, localFilePath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localFilePath)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 
 	}
 	if cmdParam.LocalUrl != "" {
-		downloadFromLocalRepo(cmdParam.LocalUrl)
-		upload(sshClient, localFilePath, server.WorkDir)
-		cmds = []string{"unzip -o " + path.Base(localFilePath)}
+		localPath := downloadFromLocalRepo(cmdParam.LocalUrl)
+		upload(sshClient, localPath, server.WorkDir)
+		cmds = []string{"unzip -o " + path.Base(localPath)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 	}
 }
-func downloadFromLocalRepo(url string) {
+func downloadFromLocalRepo(url string) string{
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
-	f, err := os.Create(path.Base(url))
+	filePath := path.Join("./upload/" + path.Base(url))
+	os.MkdirAll("./upload", 0777)
+	f, err := os.Create(filePath)
 	if err != nil {
 		panic(err)
 	}
 	io.Copy(f, resp.Body)
-
+	return filePath
 }
 func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
 	// create session
