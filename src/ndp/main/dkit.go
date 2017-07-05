@@ -11,6 +11,8 @@ import (
 	"ndp/common/model"
 	"os"
 	"path"
+	"net/http"
+	"io"
 )
 
 func main() {
@@ -18,7 +20,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 		return
-
 	}
 	config := parseConfig(cmdParam.CfgFileName)
 	//todo 多线程
@@ -29,11 +30,11 @@ func main() {
 	}
 }
 func parseCmdParam() (model.CmdParam, error) {
-	cfgFileName := flag.String("name", "", "project config file name. e.g. ec means ec.json.")
-	version := flag.String("v", "", "target version. e.g. v1.0.0.")
-	url := flag.String("url", "", "ftp url at internet. we will wget at server. e.g. http://test.com/a.zip.")
-	localUrl := flag.String("lurl", "", "ftp url at local lan. we will download zip to disk at first,then upload to server . e.g. http://127.0.0.1/a.zip.")
-	zipPath := flag.String("zf", "", "zip file path. we will upload zip file to server. e.g. /tmp/a.zip.")
+	cfgFileName := flag.String("name", "", "项目名称，对应配置文件名. e.g. ec 代表使用 ec.json.")
+	version := flag.String("v", "", "版本，是zip文件名的一部分. e.g. v1.0.0.")
+	url := flag.String("url", "", "外网仓库 url. 可以直接在服务器上 wget. e.g. http://test.com/a.zip.")
+	localUrl := flag.String("lurl", "", "外网仓库 url. 需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/a.zip.")
+	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/a.zip.")
 	flag.Parse()
 
 	var cmdParam model.CmdParam
@@ -93,7 +94,6 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 
 	}
 	if cmdParam.LocalUrl != "" {
-		//todo download to disk ,upload to server
 		downloadFromLocalRepo(cmdParam.LocalUrl)
 		upload(sshClient, localFilePath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localFilePath)}
@@ -101,7 +101,15 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 }
 func downloadFromLocalRepo(url string) {
-	//todo impl
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	f, err := os.Create(path.Base(url))
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(f, resp.Body)
 
 }
 func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
