@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
+	"io"
 	"io/ioutil"
 	"log"
 	"ndp/common"
 	"ndp/common/model"
+	"net/http"
 	"os"
 	"path"
-	"net/http"
-	"io"
 )
 
 func main() {
@@ -30,11 +31,17 @@ func main() {
 	}
 }
 func parseCmdParam() (model.CmdParam, error) {
-	cfgFileName := flag.String("name", "", "项目名称，对应配置文件名. e.g. ec 代表使用 ec.json.")
+	cfgFileName := flag.String("name", "", "项目名称，对应配置文件名. e.g. ec 代表使用配置文件ec.json.无效时报错。")
 	version := flag.String("v", "", "版本，是zip文件名的一部分. e.g. v1.0.0.")
-	url := flag.String("url", "", "外网仓库 url. 可以直接在服务器上 wget. e.g. http://test.com/a.zip.")
-	localUrl := flag.String("lurl", "", "外网仓库 url. 需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/a.zip.")
+	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/a.zip.")
+	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/a.zip.")
 	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/a.zip.")
+	flag.Usage= func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Println("")
+		fmt.Println("注意: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.")
+	}
 	flag.Parse()
 
 	var cmdParam model.CmdParam
