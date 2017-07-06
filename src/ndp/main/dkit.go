@@ -24,29 +24,29 @@ func main() {
 		return
 	}
 	config := parseConfig(cmdParam.CfgFileName)
+	if cmdParam.CfgFileName == "" {
+		cmdParam.CfgFileName = "config"
+	}
+	if cmdParam.Url == "" {
+		cmdParam.Url = config.Url
+	}
+	if cmdParam.LocalUrl == "" {
+		cmdParam.LocalUrl = config.LUrl
+	}
+	if cmdParam.Path == "" {
+		cmdParam.Path = config.Path
+	}
+	if cmdParam.Version == "" {
+		cmdParam.Version = config.Version
+		if cmdParam.Version == "" {
+			log.Fatal("version is required!")
+		}
+	}
+	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
+		log.Fatal("one of url,lurl or path is required!")
+	}
 	//todo 多线程
 	for _, server := range config.Servers {
-		if cmdParam.CfgFileName == "" {
-			cmdParam.CfgFileName = "config"
-		}
-		if cmdParam.Url == "" {
-			cmdParam.Url = config.Url
-		}
-		if cmdParam.LocalUrl == "" {
-			cmdParam.LocalUrl = config.LUrl
-		}
-		if cmdParam.Path == "" {
-			cmdParam.Path = config.Path
-		}
-		if cmdParam.Version == "" {
-			cmdParam.Version = config.Version
-			if cmdParam.Version == "" {
-				log.Fatal("version is required!")
-			}
-		}
-		if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
-			log.Fatal("one of url,lurl or path is required!")
-		}
 		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
 		deploy(cmdParam, server)
 		log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
