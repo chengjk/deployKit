@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 )
 
 func main() {
@@ -25,6 +26,27 @@ func main() {
 	config := parseConfig(cmdParam.CfgFileName)
 	//todo 多线程
 	for _, server := range config.Servers {
+		if cmdParam.CfgFileName == "" {
+			cmdParam.CfgFileName = "config"
+		}
+		if cmdParam.Url == "" {
+			cmdParam.Url = config.Url
+		}
+		if cmdParam.LocalUrl == "" {
+			cmdParam.LocalUrl = config.LUrl
+		}
+		if cmdParam.Path == "" {
+			cmdParam.Path = config.Path
+		}
+		if cmdParam.Version == "" {
+			cmdParam.Version = config.Version
+			if cmdParam.Version == "" {
+				log.Fatal("version is required!")
+			}
+		}
+		if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
+			log.Fatal("one of url,lurl or path is required!")
+		}
 		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
 		deploy(cmdParam, server)
 		log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
@@ -36,7 +58,7 @@ func parseCmdParam() (model.CmdParam, error) {
 	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/a.zip.")
 	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/a.zip.")
 	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/a.zip.")
-	flag.Usage= func() {
+	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		fmt.Println("")
@@ -49,20 +71,8 @@ func parseCmdParam() (model.CmdParam, error) {
 	cmdParam.Version = *version
 	cmdParam.Url = *url
 	cmdParam.LocalUrl = *localUrl
-	cmdParam.ZipPath = *zipPath
-
-	if cmdParam.CfgFileName == "" {
-		log.Fatal("name is required!")
-	}
-	if cmdParam.Version == "" {
-		log.Fatal("version is required!")
-	}
-
-	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.ZipPath == "" {
-		log.Fatal("one of url,lurl or zf is required!")
-	}
-
-	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json; Version:" + cmdParam.Version)
+	cmdParam.Path = *zipPath
+	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json")
 	return cmdParam, nil
 }
 
@@ -86,26 +96,27 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	var cmds []string
 	if cmdParam.Url != "" {
+		replace := strings.Replace(cmdParam.Url, "{version}", cmdParam.Version, -1)
 		cmds = []string{
-			"wget "+cmdParam.Url,
-			"unzip -o " + path.Base(cmdParam.Url)}
+			"wget " + cmdParam.Url,
+			"unzip -o " + path.Base(replace)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 	}
-	if cmdParam.ZipPath != "" {
-		localFilePath:=cmdParam.ZipPath+"/"+cmdParam.CfgFileName+"/"+cmdParam.Version+".zip"
-		upload(sshClient, localFilePath, server.WorkDir)
-		cmds = []string{"unzip -o " + path.Base(localFilePath)}
+	if cmdParam.Path != "" {
+		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
+		upload(sshClient, replace, server.WorkDir)
+		cmds = []string{"unzip -o " + path.Base(replace)}
 		executeCmd(sshClient, server.WorkDir, cmds)
-
 	}
 	if cmdParam.LocalUrl != "" {
-		localPath := downloadFromLocalRepo(cmdParam.LocalUrl)
+		replace := strings.Replace(cmdParam.LocalUrl, "{version}", cmdParam.Version, -1)
+		localPath := downloadFromLocalRepo(replace)
 		upload(sshClient, localPath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localPath)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 	}
 }
-func downloadFromLocalRepo(url string) string{
+func downloadFromLocalRepo(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
@@ -130,12 +141,11 @@ func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
 	session.Run("cd " + basePath)
-
-
+	//todo err
 	for _, cmd := range cmds {
+		log.Println("execute cmd :" + cmd)
 		session.Run(cmd)
 	}
-	log.Println("unzip finished！")
 }
 
 func upload(sshClient *ssh.Client, localFilePath, remoteDir string) {

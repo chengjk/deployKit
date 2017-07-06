@@ -1,19 +1,23 @@
 {
-  "Name":"ec-retargeting",
-  "Servers": [
+  "name":"ec-web",
+  "version":"v1.0",
+  "url":"",
+  "path":"e:/web{version}.zip",
+  "lurl":"",
+  "servers": [
     {
-      "Ip": "172.30.10.82",
-      "Port": 22,
-      "Username": "root",
-      "Password": "12354",
-      "WorkDir": "/tmp/jacky"
+      "ip": "172.30.10.82",
+      "port": 22,
+      "username": "root",
+      "password": "12354",
+      "workDir": "/tmp/jacky"
     },
     {
-      "Ip": "172.30.10.83",
-      "Port": 22,
-      "Username": "root",
-      "Password": "12354",
-      "WorkDir": "/tmp/jacky"
+      "ip": "172.30.10.83",
+      "port": 22,
+      "username": "root",
+      "password": "12354",
+      "workDir": "/tmp/jacky"
     }
   ]
 }
