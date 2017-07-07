@@ -55,9 +55,9 @@ func main() {
 func parseCmdParam() (model.CmdParam, error) {
 	cfgFileName := flag.String("name", "", "项目名称，对应配置文件名. e.g. ec 代表使用配置文件ec.json.无效时报错。")
 	version := flag.String("v", "", "版本，是zip文件名的一部分. e.g. v1.0.0.")
-	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/a.zip.")
-	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/a.zip.")
-	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/a.zip.")
+	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/{version}/a.zip.")
+	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/{version}/a.zip.")
+	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/{version}/a.zip.")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -97,6 +97,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	var cmds []string
 	if cmdParam.Url != "" {
 		replace := strings.Replace(cmdParam.Url, "{version}", cmdParam.Version, -1)
+		log.Println("from internet repository :"+ replace)
 		cmds = []string{
 			"wget " + cmdParam.Url,
 			"unzip -o " + path.Base(replace)}
@@ -104,12 +105,14 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	if cmdParam.Path != "" {
 		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
+		log.Println("from path :"+ replace)
 		upload(sshClient, replace, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(replace)}
 		executeCmd(sshClient, server.WorkDir, cmds)
 	}
 	if cmdParam.LocalUrl != "" {
 		replace := strings.Replace(cmdParam.LocalUrl, "{version}", cmdParam.Version, -1)
+		log.Println("from local repository :"+ replace)
 		localPath := downloadFromLocalRepo(replace)
 		upload(sshClient, localPath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localPath)}
@@ -117,6 +120,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 }
 func downloadFromLocalRepo(url string) string {
+	log.Println("download from local Repo start.")
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
@@ -128,6 +132,7 @@ func downloadFromLocalRepo(url string) string {
 		panic(err)
 	}
 	io.Copy(f, resp.Body)
+	log.Println("download from local Repo succeed!")
 	return filePath
 }
 func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
@@ -147,9 +152,11 @@ func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
 	}
 	log.Println("execute cmd :" + cmdStr)
 	session.Run(cmdStr)
+	log.Println("execute suffix cmd succeed!")
 }
 
 func upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
+	log.Println("upload file start!")
 	var err error
 	// create sftp client
 	var sftpClient *sftp.Client
