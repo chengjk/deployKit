@@ -3,7 +3,7 @@
   "version":"v0.8.5_004",
   "url":"",
   "path":"",
-  "lurl":"http://172.30.10.171/FacebookPMD/EC/snapshots/{version}/walle-web.tar",
+  "lurl":"",
   "servers": [
     {
       "ip": "172.30.10.82",
