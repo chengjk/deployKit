@@ -140,12 +140,13 @@ func executeCmd(sshClient *ssh.Client, basePath string, cmds []string) {
 	defer session.Close()
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
-	session.Run("cd " + basePath)
-	//todo err
+
+	cmdStr :="cd " + basePath
 	for _, cmd := range cmds {
-		log.Println("execute cmd :" + cmd)
-		session.Run(cmd)
+		cmdStr=cmdStr+";"+cmd
 	}
+	log.Println("execute cmd :" + cmdStr)
+	session.Run(cmdStr)
 }
 
 func upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
