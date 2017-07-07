@@ -126,6 +126,10 @@ func downloadFromLocalRepo(url string) string {
 		panic(err)
 	}
 	filePath := path.Join("./upload/" + path.Base(url))
+	//磁盘有的话就不再下载
+	if _, err := os.Stat(filePath); os.IsExist(err) {
+		return filePath
+	}
 	os.MkdirAll("./upload", 0777)
 	f, err := os.Create(filePath)
 	if err != nil {
@@ -177,11 +181,13 @@ func upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
 	}
 	defer dstFile.Close()
 	buf := make([]byte, 1024)
+	fmt.Print("uploading...")
 	for {
 		n, _ := srcFile.Read(buf)
 		if n == 0 {
 			break
 		}
+		fmt.Print(".")
 		dstFile.Write(buf)
 	}
 	log.Println("copy file to remote server finished!")
