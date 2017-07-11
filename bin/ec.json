@@ -1,9 +1,10 @@
 {
-  "name":"ec-web",
-  "version":"v0.8.5_004",
-  "url":"",
-  "path":"",
-  "lurl":"",
+  "name": "ec-web",
+  "version": "v0.8.5_004",
+  "url": "",
+  "path": "",
+  "lurl": "",
+  "suffixCmd": "",
   "servers": [
     {
       "ip": "172.30.10.82",

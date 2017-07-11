@@ -52,7 +52,7 @@ func Upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
 		log.Fatal(err)
 	}
 	defer dstFile.Close()
-	buf := make([]byte, 1024)
+	buf := make([]byte, 204800)
 	fmt.Print("uploading...")
 	for {
 		n, _ := srcFile.Read(buf)

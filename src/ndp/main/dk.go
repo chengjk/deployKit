@@ -10,7 +10,6 @@ import (
 	"ndp/common/filehelper"
 	"ndp/common/model"
 	"os"
-	"os/exec"
 	"path"
 	"strings"
 )
@@ -79,20 +78,23 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 			"wget " + cmdParam.Url,
 			"unzip -o " + path.Base(replace)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
+		return
 	}
 	if cmdParam.Path != "" {
 		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
 		log.Println("from path :"+ replace)
 		filehelper.Upload(sshClient, replace, server.WorkDir)
-		cmds = []string{"unzip -o " + path.Base(replace)}
+		cmds = []string{"tar -zxvf " + path.Base(replace),
+		"tar -xvf walle-web.tar",
+		"mkdir "+cmdParam.Version,
+		"tar -xvf ./walle-web/walle-web.tar -C ./"+cmdParam.Version}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
+		return
 	}
 	if cmdParam.LocalUrl != "" {
 		replace := strings.Replace(cmdParam.LocalUrl, "{version}", cmdParam.Version, -1)
 		log.Println("from local repository :"+ replace)
 		localPath := filehelper.Download(replace)
-		exec.Command("cd "+path.Dir(localPath))
-		exec.Command("tar -xvf "+path.Base(localPath))
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localPath)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
