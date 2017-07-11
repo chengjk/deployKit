@@ -1,4 +1,4 @@
-# Deploy Kit
+# Deploy Kit 
 
 tags： tool
 
@@ -47,14 +47,14 @@ config.json
       "ip": "172.30.10.82",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxxxx",
       "workDir": "/tmp/jacky"
     },
     {
       "ip": "172.30.10.83",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxxxx",
       "workDir": "/tmp/jacky"
     }
   ]
@@ -65,7 +65,7 @@ config.json
 
 ```sh
 #!/usr/bin/env bash
-dk.exe -name=config -v=v0.8.5_006 -path="./upload/walle-web.tar"
+dk.exe -name=config -v=v0.8.5_006 -path="./upload/walle-web.tar" 
 ```
 使用命令的方式时，优先使用命令指定的值，然后是配置文件。
 
@@ -92,18 +92,21 @@ tar -xvf ./walle-web/walle-web.tar -C ./v0.8.5_006
 
     ```shell
     #!/usr/bin/env bash
-    dk.exe -v=v0.8.5_006
+    dk.exe -v=v0.8.5_006 
     ```
     命令行参数会覆盖配置文件参数。
 3. 多项目。为每个项目制作配置文件，如a.json,b.json。运行命令时指定 `-name`参数。
     ```shell
     #!/usr/bin/env bash
-    dk.exe -name=a -v=v0.8.5_006
+    dk.exe -name=a -v=v0.8.5_006 
     ```
 
 3. 特殊处理。从局域网中下载后在上传服务器之前希望做一些处理，把这些所有写成脚本。每次部署新版本时编辑脚本后执行。还有更好的办法是让这个脚本可以接受一个参数作为版本，使用起来就像是：
-```sh
-deploy.sh v1.0.0
-```
+    ```sh
+    deploy.sh v1.0.0
+    ```
 
 以上。
+
+
+
