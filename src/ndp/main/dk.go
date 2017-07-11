@@ -44,9 +44,6 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	}
 	if cmdParam.Version == "" {
 		cmdParam.Version = config.Version
-		if cmdParam.Version == "" {
-			log.Fatal("version is required!")
-		}
 	}
 	cmdparam.Verify(cmdParam)
 	return cmdParam, config
