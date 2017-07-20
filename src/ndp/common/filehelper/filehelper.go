@@ -18,6 +18,7 @@ func Download(url string) string {
 		panic(err)
 	}
 	filePath := path.Join("./upload/" + path.Base(url))
+	log.Println(filePath)
 	//磁盘有的话就不再下载
 	if _, err := os.Stat(filePath); os.IsExist(err) {
 		return filePath
