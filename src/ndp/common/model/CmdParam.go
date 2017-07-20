@@ -1,4 +1,5 @@
 package model
+
 type CmdParam struct {
 	CfgFileName string
 	Version     string

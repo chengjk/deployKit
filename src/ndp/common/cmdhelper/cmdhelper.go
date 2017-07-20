@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func ExecRemote(sshClient *ssh.Client, basePath string, cmds []string){
+func ExecRemote(sshClient *ssh.Client, basePath string, cmds []string) {
 	// create session
 	var session *ssh.Session
 	var err error
@@ -17,9 +17,9 @@ func ExecRemote(sshClient *ssh.Client, basePath string, cmds []string){
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
 
-	cmdStr :="cd " + basePath
+	cmdStr := "cd " + basePath
 	for _, cmd := range cmds {
-		cmdStr=cmdStr+";"+cmd
+		cmdStr = cmdStr + ";" + cmd
 	}
 	log.Println("execute cmd :" + cmdStr)
 	session.Run(cmdStr)

@@ -12,7 +12,7 @@ func Connect(user, password, host string, port int) (*ssh.Client, error) {
 		auth         []ssh.AuthMethod
 		clientConfig *ssh.ClientConfig
 		sshClient    *ssh.Client
-		err error
+		err          error
 	)
 	// get auth method
 	auth = make([]ssh.AuthMethod, 0)
@@ -27,7 +27,7 @@ func Connect(user, password, host string, port int) (*ssh.Client, error) {
 		Timeout: 30 * time.Second,
 	}
 	// connect to ssh
-	addr:= fmt.Sprintf("%s:%d", host, port)
+	addr := fmt.Sprintf("%s:%d", host, port)
 	if sshClient, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
 		return nil, err
 	}

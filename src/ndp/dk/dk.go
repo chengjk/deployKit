@@ -1,4 +1,4 @@
-package main
+package dk
 
 import (
 	"encoding/json"
@@ -49,7 +49,7 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	return cmdParam, config
 }
 
-func parseConfig(cfgFileName string) (*model.Config) {
+func parseConfig(cfgFileName string) *model.Config {
 	workDir, _ := os.Getwd()
 	cfgFilePath := workDir + "\\" + cfgFileName + ".json"
 	log.Println("using config file :" + cfgFilePath)
@@ -70,7 +70,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	var cmds []string
 	if cmdParam.Url != "" {
 		replace := strings.Replace(cmdParam.Url, "{version}", cmdParam.Version, -1)
-		log.Println("from internet repository :"+ replace)
+		log.Println("from internet repository :" + replace)
 		cmds = []string{
 			"wget " + cmdParam.Url,
 			"unzip -o " + path.Base(replace)}
@@ -79,22 +79,21 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	if cmdParam.Path != "" {
 		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
-		log.Println("from path :"+ replace)
+		log.Println("from path :" + replace)
 		filehelper.Upload(sshClient, replace, server.WorkDir)
 		cmds = []string{"tar -zxvf " + path.Base(replace),
-		"tar -xvf walle-web.tar",
-		"mkdir "+cmdParam.Version,
-		"tar -xvf ./walle-web/walle-web.tar -C ./"+cmdParam.Version}
+			"tar -xvf walle-web.tar",
+			"mkdir " + cmdParam.Version,
+			"tar -xvf ./walle-web/walle-web.tar -C ./" + cmdParam.Version}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 		return
 	}
 	if cmdParam.LocalUrl != "" {
 		replace := strings.Replace(cmdParam.LocalUrl, "{version}", cmdParam.Version, -1)
-		log.Println("from local repository :"+ replace)
+		log.Println("from local repository :" + replace)
 		localPath := filehelper.Download(replace)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
 		cmds = []string{"unzip -o " + path.Base(localPath)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 	}
 }
-
