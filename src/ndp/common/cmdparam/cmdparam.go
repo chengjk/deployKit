@@ -14,6 +14,7 @@ func Parse() (model.CmdParam, error) {
 	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/{version}/a.zip.")
 	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/{version}/a.zip.")
 	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/{version}/a.zip.")
+	cmd := flag.String("cmd", "", "后置命令,文件上传成功后在server workDir 中执行的命令，多条以分号隔开。可以使用变量{version}")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -28,6 +29,7 @@ func Parse() (model.CmdParam, error) {
 	param.Url = *url
 	param.LocalUrl = *localUrl
 	param.Path = *zipPath
+	param.SuffixCmd = *cmd
 	log.Println("ConfigFile:" + param.CfgFileName + ".json")
 	return param, nil
 
@@ -37,6 +39,9 @@ func Verify(cmdParam model.CmdParam) {
 		log.Fatal("one of url,lurl or path is required!")
 	}
 	if cmdParam.Version == "" {
-		log.Fatal("version is required!")
+		log.Fatal("project version is required!")
+	}
+	if cmdParam.SuffixCmd == "" {
+		log.Fatal("suffix cmd is required!")
 	}
 }

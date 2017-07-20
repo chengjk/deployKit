@@ -8,10 +8,11 @@ type ServerInfo struct {
 	WorkDir  string `json:"workDir"`
 }
 type Config struct {
-	Name    string       `json:"name"`
-	Version string       `json:"version"`
-	Url     string       `json:"url"`
-	LUrl    string       `json:"lurl"`
-	Path    string       `json:"path"`
-	Servers []ServerInfo `json:"servers"`
+	Name      string       `json:"name"`
+	Version   string       `json:"version"`
+	Url       string       `json:"url"`
+	LUrl      string       `json:"lurl"`
+	Path      string       `json:"path"`
+	SuffixCmd string       `json:"suffixCmd"`
+	Servers   []ServerInfo `json:"servers"`
 }

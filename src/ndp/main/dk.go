@@ -10,7 +10,6 @@ import (
 	"ndp/common/filehelper"
 	"ndp/common/model"
 	"os"
-	"path"
 	"strings"
 )
 
@@ -45,6 +44,9 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	if cmdParam.Version == "" {
 		cmdParam.Version = config.Version
 	}
+	if cmdParam.SuffixCmd == "" {
+		cmdParam.SuffixCmd = config.SuffixCmd
+	}
 	cmdparam.Verify(cmdParam)
 	return cmdParam, config
 }
@@ -73,7 +75,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 		log.Println("from internet repository :" + replace)
 		cmds = []string{
 			"wget " + cmdParam.Url,
-			"unzip -o " + path.Base(replace)}
+			strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 		return
 	}
@@ -81,10 +83,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
 		log.Println("from path :" + replace)
 		filehelper.Upload(sshClient, replace, server.WorkDir)
-		cmds = []string{"tar -zxvf " + path.Base(replace),
-			"tar -xvf walle-web.tar",
-			"mkdir " + cmdParam.Version,
-			"tar -xvf ./walle-web/walle-web.tar -C ./" + cmdParam.Version}
+		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 		return
 	}
@@ -93,7 +92,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 		log.Println("from local repository :" + replace)
 		localPath := filehelper.Download(replace)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
-		cmds = []string{"unzip -o " + path.Base(localPath)}
+		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 	}
 }
