@@ -13,8 +13,8 @@ echo "set new go env"
 export GOPATH="$CUR_DIR"
 export GOBIN="$CUR_DIR"/bin
 
-echo "format code"
-gofmt -w src
+#echo "format code"
+#gofmt -w src
 
 echo "install"
 go install src/ndp/main/dk.go
