@@ -8,6 +8,9 @@
 *.iml
 pkg/
 *.exe
+*.tar
+*.tar.gz
+*.zip
 
 /src/*
 !/src/ndp
