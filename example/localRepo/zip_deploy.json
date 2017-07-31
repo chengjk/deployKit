@@ -7,17 +7,17 @@
   "suffixCmd": "mkdir {version};tar -zxvf walle-web.tar.gz -C {version};cd {version};tar -xvf walle-web.tar ;tar -xvf ./walle-web/walle-web.tar;",
   "servers": [
     {
-      "ip": "120.25.231.104",
+      "ip": "172.30.10.82",
       "port": 22,
       "username": "root",
-      "password": "adf!@#12#!@#ADFS",
+      "password": "12354",
       "workDir": "/tmp/jacky"
     },
     {
-      "ip": "120.24.156.74",
+      "ip": "172.30.10.83",
       "port": 22,
       "username": "root",
-      "password": "adf!@#12#!@#ADFS",
+      "password": "12354",
       "workDir": "/tmp/jacky"
     }
   ]
