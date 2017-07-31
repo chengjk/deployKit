@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-version=v0.8.6_005
+version=v0.8.8_001
 
 if [  -f "./upload/walle-web.tar" ] ; then
-	echo "文件已存在，是否要重新下载？(y/n)"
+	echo "already exsit, redownload？(y/n)"
 	read answer
 	if [ "$answer" == "y" ]; then
 	    rm -rf ./upload/*
@@ -14,8 +14,11 @@ else
 fi
 
 # do sth
-tar -zcvf ./upload/walle-web.tar.gz ./upload/walle-web.tar
+
+cd ./upload
+tar -zcvf walle-web.tar.gz walle-web.tar
+cd ..
 
 # execute
-./dk.exe -name=treat -path=./upload/walle-web.tar.gz
+./dk.exe -name=zip_deploy -path=./upload/walle-web.tar.gz
 

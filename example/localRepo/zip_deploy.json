@@ -1,0 +1,24 @@
+{
+  "name": "ec-web",
+  "version": "v0.8.8_001",
+  "url": "",
+  "path": "",
+  "lurl": "",
+  "suffixCmd": "mkdir {version};tar -zxvf walle-web.tar.gz -C {version};cd {version};tar -xvf walle-web.tar ;tar -xvf ./walle-web/walle-web.tar;",
+  "servers": [
+    {
+      "ip": "120.25.231.104",
+      "port": 22,
+      "username": "root",
+      "password": "adf!@#12#!@#ADFS",
+      "workDir": "/tmp/jacky"
+    },
+    {
+      "ip": "120.24.156.74",
+      "port": 22,
+      "username": "root",
+      "password": "adf!@#12#!@#ADFS",
+      "workDir": "/tmp/jacky"
+    }
+  ]
+}
