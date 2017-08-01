@@ -9,18 +9,22 @@ CUR_DIR=`pwd`
 OLD_GOPATH="$GOPATH"
 OLD_GOBIN="$GOBIN"
 
-echo "set new go env"
+echo "set new go env."
 export GOPATH="$CUR_DIR"
 export GOBIN="$CUR_DIR"/bin
 
 #echo "format code"
 #gofmt -w src
+echo "get dependency."
+cd src/ndp/main
+go get -d
+cd $GOPATH
 
-echo "install"
+echo "installing ..."
 go install src/ndp/main/dk.go
 
-echo "rollback go env"
+echo "rollback go env."
 export GOPATH="$OLD_GOPATH"
 export GOBIN="$OLD_GOBIN"
 
-echo 'finished'
+echo 'finished!'
