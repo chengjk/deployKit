@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-./dk.exe
+./dk
 
 # set new version
-#./dk.exe -v=v0.8.6_006
+#./dk -v=v0.8.6_006

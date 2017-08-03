@@ -1,10 +1,10 @@
 {
   "name": "ec-web",
-  "version": "v0.8.6_005",
+  "version": "v0.8.6_006",
   "url": "",
-  "path": "./upload/walle-web.zip",
+  "path": "./upload/walle-web.tar.gz",
   "lurl": "",
-  "suffixCmd": "mkdir {version};unzip -o walle-web.zip ./{version}",
+  "suffixCmd": "mkdir {version};tar -zxvf walle-web.tar.gz -C ./{version};rm -f walle-web.tar.gz",
   "servers": [
     {
       "ip": "172.30.10.82",

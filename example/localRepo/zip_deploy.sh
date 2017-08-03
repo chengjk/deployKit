@@ -2,8 +2,14 @@
 
 version=v0.8.8_001
 
+if [ ! $version ]; then
+	read -p "please enter tag name :" tag
+	version=$tag
+fi
+echo  "tag name is $version."
+
 if [  -f "./upload/walle-web.tar" ] ; then
-	echo "already exsit, redownload？(y/n)"
+	echo "target file already exsit, redownload?(y/n)"
 	read answer
 	if [ "$answer" == "y" ]; then
 	    rm -rf ./upload/*
@@ -20,5 +26,5 @@ tar -zcvf walle-web.tar.gz walle-web.tar
 cd ..
 
 # execute
-./dk.exe -name=zip_deploy -path=./upload/walle-web.tar.gz
+./dk -name=zip_deploy -v=$version -path=./upload/walle-web.tar.gz
 

@@ -12,5 +12,6 @@ pkg/
 *.tar.gz
 *.zip
 
+**/upload*/*
 /src/*
 !/src/ndp
