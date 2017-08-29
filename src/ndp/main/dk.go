@@ -11,6 +11,7 @@ import (
 	"ndp/common/model"
 	"os"
 	"strings"
+	"path"
 )
 
 func main() {
@@ -53,7 +54,7 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 
 func parseConfig(cfgFileName string) *model.Config {
 	workDir, _ := os.Getwd()
-	cfgFilePath := workDir + "\\" + cfgFileName + ".json"
+	cfgFilePath := workDir + "/" + cfgFileName + ".json"
 	log.Println("using config file :" + cfgFilePath)
 	fd, error := ioutil.ReadFile(cfgFilePath)
 	if error != nil {

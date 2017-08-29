@@ -28,3 +28,7 @@ cd ..
 # execute
 ./dk -name=zip_deploy -v=$version -path=./upload/walle-web.tar.gz
 
+read -s -n 1 -p "Press any key to exit..."
+echo
+echo bye...
+exit 0
