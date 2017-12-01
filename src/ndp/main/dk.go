@@ -19,17 +19,21 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	if cmdParam.ShowVersion{
-		print("develop kit version: "+model.Version)
+	if cmdParam.ShowVersion {
+		print("develop kit version: " + model.Version)
 		return
 	}
-	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json")
 	cmdParam, config := mergeWithCfgFile(cmdParam)
-	//deploy to servers
-	for _, server := range config.Servers {
-		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
-		deploy(cmdParam, server)
-		log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
+	if cmdparam.Verify(cmdParam) {
+		log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json")
+		//deploy to servers
+		for _, server := range config.Servers {
+			log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
+			deploy(cmdParam, server)
+			log.Println("deploy " + config.Name + " to server " + server.Host + " end.")
+		}
+	} else {
+		cmdparam.ShowUsage()
 	}
 }
 func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
@@ -52,7 +56,6 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	if cmdParam.SuffixCmd == "" {
 		cmdParam.SuffixCmd = config.SuffixCmd
 	}
-	cmdparam.Verify(cmdParam)
 	return cmdParam, config
 }
 
@@ -62,7 +65,7 @@ func parseConfig(cfgFileName string) *model.Config {
 	log.Println("using config file " + cfgFilePath)
 	fd, error := ioutil.ReadFile(cfgFilePath)
 	if error != nil {
-		panic(error)
+		log.Fatal(error.Error())
 	}
 	var config = &model.Config{}
 	json.Unmarshal(fd, config)

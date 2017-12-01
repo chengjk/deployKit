@@ -17,12 +17,7 @@ func Parse() (model.CmdParam, error) {
 	cmd := flag.String("cmd", "echo hello;", "后置命令,文件上传成功后在server的workDir中执行的命令，以分号隔开。可以使用变量{tag}")
 	v:=flag.Bool("v", false,"show current version.")
 
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-		flag.PrintDefaults()
-		fmt.Println("")
-		fmt.Println("Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.")
-	}
+	flag.Usage = ShowUsage
 	flag.Parse()
 	var param model.CmdParam
 	param.CfgFileName = *cfgFileName
@@ -34,14 +29,26 @@ func Parse() (model.CmdParam, error) {
 	param.ShowVersion=*v
 	return param, nil
 }
-func Verify(cmdParam model.CmdParam) {
+
+func ShowUsage(){
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	flag.PrintDefaults()
+	fmt.Println("")
+	fmt.Println("Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.")
+}
+
+func Verify(cmdParam model.CmdParam)(bool) {
 	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
 		log.Fatal("one of url,lurl or path is required!")
+		return false
 	}
 	if cmdParam.Tag == "" {
 		log.Fatal("project tag is required!")
+		return false
 	}
 	if cmdParam.SuffixCmd == "" {
 		log.Fatal("suffix cmd is required!")
+		return false
 	}
+	return true
 }
