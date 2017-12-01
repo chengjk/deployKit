@@ -9,7 +9,7 @@ type ServerInfo struct {
 }
 type Config struct {
 	Name      string       `json:"name"`
-	Version   string       `json:"version"`
+	Tag       string       `json:"tag"`
 	Url       string       `json:"url"`
 	LUrl      string       `json:"lurl"`
 	Path      string       `json:"path"`

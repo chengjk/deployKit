@@ -11,7 +11,6 @@ import (
 	"ndp/common/model"
 	"os"
 	"strings"
-	"path"
 )
 
 func main() {
@@ -20,8 +19,13 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	if cmdParam.ShowVersion{
+		print("develop kit version: "+model.Version)
+		return
+	}
+	log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json")
 	cmdParam, config := mergeWithCfgFile(cmdParam)
-	//todo 多线程
+	//deploy to servers
 	for _, server := range config.Servers {
 		log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
 		deploy(cmdParam, server)
@@ -42,8 +46,8 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	if cmdParam.Path == "" {
 		cmdParam.Path = config.Path
 	}
-	if cmdParam.Version == "" {
-		cmdParam.Version = config.Version
+	if cmdParam.Tag == "" {
+		cmdParam.Tag = config.Tag
 	}
 	if cmdParam.SuffixCmd == "" {
 		cmdParam.SuffixCmd = config.SuffixCmd
@@ -55,7 +59,7 @@ func mergeWithCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 func parseConfig(cfgFileName string) *model.Config {
 	workDir, _ := os.Getwd()
 	cfgFilePath := workDir + "/" + cfgFileName + ".json"
-	log.Println("using config file :" + cfgFilePath)
+	log.Println("using config file " + cfgFilePath)
 	fd, error := ioutil.ReadFile(cfgFilePath)
 	if error != nil {
 		panic(error)
@@ -72,28 +76,28 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	var cmds []string
 	if cmdParam.Url != "" {
-		replace := strings.Replace(cmdParam.Url, "{version}", cmdParam.Version, -1)
+		replace := strings.Replace(cmdParam.Url, "{tag}", cmdParam.Tag, -1)
 		log.Println("from internet repository :" + replace)
 		cmds = []string{
 			"wget " + cmdParam.Url,
-			strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
+			strings.Replace(cmdParam.SuffixCmd, "{tag}", cmdParam.Tag, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 		return
 	}
 	if cmdParam.Path != "" {
-		replace := strings.Replace(cmdParam.Path, "{version}", cmdParam.Version, -1)
+		replace := strings.Replace(cmdParam.Path, "{tag}", cmdParam.Tag, -1)
 		log.Println("from path :" + replace)
 		filehelper.Upload(sshClient, replace, server.WorkDir)
-		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
+		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{tag}", cmdParam.Tag, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 		return
 	}
 	if cmdParam.LocalUrl != "" {
-		replace := strings.Replace(cmdParam.LocalUrl, "{version}", cmdParam.Version, -1)
+		replace := strings.Replace(cmdParam.LocalUrl, "{tag}", cmdParam.Tag, -1)
 		log.Println("from local repository :" + replace)
 		localPath := filehelper.Download(replace)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
-		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{version}", cmdParam.Version, -1)}
+		cmds = []string{strings.Replace(cmdParam.SuffixCmd, "{tag}", cmdParam.Tag, -1)}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmds)
 	}
 }
