@@ -50,10 +50,11 @@ func Upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
 	var remoteFileName = path.Base(localFilePath)
 	dstFile, err := sftpClient.Create(path.Join(remoteDir, remoteFileName))
 	if err != nil {
+		log.Fatalln("remote dir is not exist.")
 		log.Fatal(err)
 	}
 	defer dstFile.Close()
-	buf := make([]byte, 204800)
+	buf := make([]byte, 409600)
 	fmt.Print("uploading...")
 	for {
 		n, _ := srcFile.Read(buf)
@@ -63,5 +64,6 @@ func Upload(sshClient *ssh.Client, localFilePath, remoteDir string) {
 		fmt.Print(".")
 		dstFile.Write(buf)
 	}
+	println()
 	log.Println("copy file to remote server finished!")
 }

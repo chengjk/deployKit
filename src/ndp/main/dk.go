@@ -25,7 +25,6 @@ func main() {
 	}
 	cmdParam, config := mergeCfgFile(cmdParam)
 	if cmdparam.Verify(cmdParam) {
-		log.Println("ConfigFile:" + cmdParam.CfgFileName + ".json")
 		//deploy to servers
 		for _, server := range config.Servers {
 			log.Println("deploy " + config.Name + " to server " + server.Host + " start.")
@@ -97,6 +96,7 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	if cmdParam.LocalUrl != "" {
 		log.Println("from local repository :" + cmdParam.LocalUrl)
 		localPath := filehelper.Download( cmdParam.LocalUrl)
+		log.Print("upload from "+localPath)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
 		cmdList = []string{cmdParam.SuffixCmd}
 		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmdList)

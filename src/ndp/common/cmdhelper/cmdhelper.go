@@ -23,5 +23,5 @@ func ExecRemote(sshClient *ssh.Client, basePath string, cmds []string) {
 	}
 	log.Println("execute cmd :" + cmdStr)
 	session.Run(cmdStr)
-	log.Println("execute suffix cmd succeed!")
+	log.Println("execute cmd succeed!")
 }
