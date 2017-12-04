@@ -81,38 +81,31 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	replaceVar(&cmdParam)
 
-	log.Println("prefix cmd"+ cmdParam.PrefixCmd)
+	//exe prefix cmd
 	cmdhelper.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.PrefixCmd})
 
-	var suffixCmdList []string
+	//upload and exe suffix cmd
 	if cmdParam.Url != "" {
 		log.Println("from internet repository :" + cmdParam.Url)
-		suffixCmdList = []string{
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, []string{
 			"wget " + cmdParam.Url,
-			cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
-		return
-	}
-	if cmdParam.Path != "" {
+			cmdParam.SuffixCmd})
+	} else if cmdParam.Path != "" {
 		log.Println("from path :" + cmdParam.Path)
 		filehelper.Upload(sshClient, cmdParam.Path, server.WorkDir)
-		suffixCmdList = []string{cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
-		return
-	}
-	if cmdParam.LocalUrl != "" {
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
+	} else if cmdParam.LocalUrl != "" {
 		log.Println("from local repository :" + cmdParam.LocalUrl)
-		localPath := filehelper.Download( cmdParam.LocalUrl)
-		log.Print("upload from "+localPath)
+		localPath := filehelper.Download(cmdParam.LocalUrl)
+		log.Print("upload from " + localPath)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
-		suffixCmdList = []string{cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
 	}
 }
 
-func replaceVar(p *model.CmdParam){
-	p.Url= strings.Replace(p.Url, "{tag}", p.Tag, -1)
-	p.Path= strings.Replace(p.Path, "{tag}", p.Tag, -1)
-	p.LocalUrl= strings.Replace(p.LocalUrl, "{tag}", p.Tag, -1)
-	p.SuffixCmd= strings.Replace(p.SuffixCmd, "{tag}", p.Tag, -1)
+func replaceVar(p *model.CmdParam) {
+	p.Url = strings.Replace(p.Url, "{tag}", p.Tag, -1)
+	p.Path = strings.Replace(p.Path, "{tag}", p.Tag, -1)
+	p.LocalUrl = strings.Replace(p.LocalUrl, "{tag}", p.Tag, -1)
+	p.SuffixCmd = strings.Replace(p.SuffixCmd, "{tag}", p.Tag, -1)
 }
