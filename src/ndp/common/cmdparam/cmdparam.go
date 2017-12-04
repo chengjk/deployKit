@@ -9,19 +9,19 @@ import (
 )
 
 func Parse() (model.CmdParam, error) {
-	cfgFileName := flag.String("name", "config", "项目名称，对应配置文件名,默认是config. e.g. ec 代表使用配置文件ec.json.无效时报错。")
-	tag := flag.String("tag", "", "标签.可作为变量{tag}使用。")
-	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/{tag}/a.zip.")
-	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/{tag}/a.zip.")
-	zipPath := flag.String("path", "", "本地磁盘路径，上传服务器的文件地址. e.g. /tmp/{tag}/a.zip.")
-	pcmd := flag.String("pcmd", "", "前置命令,文件上传前在server的workDir中执行的命令，分号隔开。可以使用变量{tag}")
-	scmd := flag.String("scmd", "", "后置命令,文件上传成功后在server的workDir中执行的命令，分号隔开。可以使用变量{tag}。")
+	name := flag.String("name", "config", "名称可作为变量{name}使用,对应配置文件名.不能使用变量. e.g. ec表示使用ec.json.")
+	tag := flag.String("tag", "", "标签.可作为变量{tag}使用.不能使用变量. e.g. v1.0")
+	url := flag.String("url", "", "外网仓库地址.直接在服务器上 wget. e.g. http://test.com/{tag}/{name}.zip.")
+	localUrl := flag.String("lurl", "", "内网仓库地址,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/{tag}/{name}.zip.")
+	zipPath := flag.String("path", "", "目标文件在本地磁盘路径. e.g. /tmp/{tag}/{name}.zip.")
+	pcmd := flag.String("pcmd", "", "prefix cmd,文件上传前在server的workDir中执行，分号隔开。e.g. mkdir p")
+	scmd := flag.String("scmd", "", "suffix cmd,文件上传后在server的workDir中执行，分号隔开。e.g. rm -f *.zip")
 	v:=flag.Bool("v", false,"show current version.")
 
 	flag.Usage = ShowUsage
 	flag.Parse()
 	var param model.CmdParam
-	param.CfgFileName = *cfgFileName
+	param.Name = *name
 	param.Tag = *tag
 	param.Url = *url
 	param.LocalUrl = *localUrl

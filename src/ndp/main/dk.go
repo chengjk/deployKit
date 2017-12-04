@@ -36,10 +36,10 @@ func main() {
 	}
 }
 func mergeCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
-	if cmdParam.CfgFileName == "" {
-		cmdParam.CfgFileName = "config"
+	if cmdParam.Name == "" {
+		cmdParam.Name = "config"
 	}
-	config := parseConfig(cmdParam.CfgFileName)
+	config := parseConfig(cmdParam.Name)
 	if cmdParam.Url == "" {
 		cmdParam.Url = config.Url
 	}
@@ -104,8 +104,15 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 }
 
 func replaceVar(p *model.CmdParam) {
+	p.Url = strings.Replace(p.Url, "{name}", p.Name, -1)
+	p.Path = strings.Replace(p.Path, "{name}", p.Name, -1)
+	p.LocalUrl = strings.Replace(p.LocalUrl, "{name}", p.Name, -1)
+	p.PrefixCmd = strings.Replace(p.PrefixCmd, "{name}", p.Name, -1)
+	p.SuffixCmd = strings.Replace(p.SuffixCmd, "{name}", p.Name, -1)
+
 	p.Url = strings.Replace(p.Url, "{tag}", p.Tag, -1)
 	p.Path = strings.Replace(p.Path, "{tag}", p.Tag, -1)
 	p.LocalUrl = strings.Replace(p.LocalUrl, "{tag}", p.Tag, -1)
+	p.PrefixCmd = strings.Replace(p.PrefixCmd, "{tag}", p.Tag, -1)
 	p.SuffixCmd = strings.Replace(p.SuffixCmd, "{tag}", p.Tag, -1)
 }
