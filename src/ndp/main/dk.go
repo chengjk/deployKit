@@ -52,6 +52,9 @@ func mergeCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	if cmdParam.Tag == "" {
 		cmdParam.Tag = config.Tag
 	}
+	if cmdParam.PrefixCmd == "" {
+		cmdParam.PrefixCmd = config.PrefixCmd
+	}
 	if cmdParam.SuffixCmd == "" {
 		cmdParam.SuffixCmd = config.SuffixCmd
 	}
@@ -77,20 +80,24 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 		log.Fatal(err)
 	}
 	replaceVar(&cmdParam)
-	var cmdList []string
+
+	log.Println("prefix cmd"+ cmdParam.PrefixCmd)
+	cmdhelper.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.PrefixCmd})
+
+	var suffixCmdList []string
 	if cmdParam.Url != "" {
 		log.Println("from internet repository :" + cmdParam.Url)
-		cmdList = []string{
+		suffixCmdList = []string{
 			"wget " + cmdParam.Url,
 			cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmdList)
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
 		return
 	}
 	if cmdParam.Path != "" {
 		log.Println("from path :" + cmdParam.Path)
 		filehelper.Upload(sshClient, cmdParam.Path, server.WorkDir)
-		cmdList = []string{cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmdList)
+		suffixCmdList = []string{cmdParam.SuffixCmd}
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
 		return
 	}
 	if cmdParam.LocalUrl != "" {
@@ -98,8 +105,8 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 		localPath := filehelper.Download( cmdParam.LocalUrl)
 		log.Print("upload from "+localPath)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
-		cmdList = []string{cmdParam.SuffixCmd}
-		cmdhelper.ExecRemote(sshClient, server.WorkDir, cmdList)
+		suffixCmdList = []string{cmdParam.SuffixCmd}
+		cmdhelper.ExecRemote(sshClient, server.WorkDir, suffixCmdList)
 	}
 }
 

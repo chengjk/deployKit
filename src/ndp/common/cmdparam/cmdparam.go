@@ -13,8 +13,9 @@ func Parse() (model.CmdParam, error) {
 	tag := flag.String("tag", "", "标签.可作为变量{tag}使用。")
 	url := flag.String("url", "", "外网仓库地址.可以直接在服务器上 wget. e.g. http://test.com/{tag}/a.zip.")
 	localUrl := flag.String("lurl", "", "内网仓库地址.服务器不能直接访问,需要先下载到本地磁盘再上传服务器. e.g. http://127.0.0.1/{tag}/a.zip.")
-	zipPath := flag.String("path", "", "本地磁盘路径，直接上传服务器. e.g. /tmp/{tag}/a.zip.")
-	cmd := flag.String("cmd", "", "后置命令,文件上传成功后在server的workDir中执行的命令，以分号隔开。可以使用变量{tag}")
+	zipPath := flag.String("path", "", "本地磁盘路径，上传服务器的文件地址. e.g. /tmp/{tag}/a.zip.")
+	pcmd := flag.String("pcmd", "", "前置命令,文件上传前在server的workDir中执行的命令，分号隔开。可以使用变量{tag}")
+	scmd := flag.String("scmd", "", "后置命令,文件上传成功后在server的workDir中执行的命令，分号隔开。可以使用变量{tag}。")
 	v:=flag.Bool("v", false,"show current version.")
 
 	flag.Usage = ShowUsage
@@ -25,7 +26,8 @@ func Parse() (model.CmdParam, error) {
 	param.Url = *url
 	param.LocalUrl = *localUrl
 	param.Path = *zipPath
-	param.SuffixCmd = *cmd
+	param.SuffixCmd = *scmd
+	param.PrefixCmd = *pcmd
 	param.ShowVersion=*v
 	return param, nil
 }
@@ -39,15 +41,11 @@ func ShowUsage(){
 
 func Verify(cmdParam model.CmdParam)(bool) {
 	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
-		log.Fatal("one of url,lurl or path is required!")
+		log.Fatal("one and only one of url,lurl or path is required!")
 		return false
 	}
 	if cmdParam.Tag == "" {
 		log.Fatal("project tag is required!")
-		return false
-	}
-	if cmdParam.SuffixCmd == "" {
-		log.Fatal("suffix cmd is required!")
 		return false
 	}
 	return true

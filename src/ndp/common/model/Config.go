@@ -14,5 +14,6 @@ type Config struct {
 	LUrl      string       `json:"lurl"`
 	Path      string       `json:"path"`
 	SuffixCmd string       `json:"suffixCmd"`
+	PrefixCmd string       `json:"prefixCmd"`
 	Servers   []ServerInfo `json:"servers"`
 }

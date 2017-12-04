@@ -1,10 +1,10 @@
 {
   "name": "ec-web",
-  "version": "v0.8.8_001",
+  "tag": "test_ec_inter_003",
   "url": "",
   "path": "",
-  "lurl": "http://172.30.10.171/FacebookPMD/EC/snapshots/{version}/walle-web.tar",
-  "suffixCmd": "tar -xvf walle-web.tar;mkdir {version};tar -xvf ./walle-web/walle-web.tar -C ./{version};rm -rf walle-web walle-web.tar*;",
+  "lurl": "http://172.30.10.171/FacebookPMD/EC/snapshots/{tag}/walle-web.tar",
+  "suffixCmd": "tar -xvf walle-web.tar;mkdir {tag};tar -xvf ./walle-web/walle-web.tar -C ./{tag};rm -rf walle-web walle-web.tar*;",
   "servers": [
     {
       "ip": "172.30.10.82",
