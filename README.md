@@ -187,6 +187,6 @@ tar -zcvf ./upload/web.tar.gz ./upload/web.tar
 以上。
 
 
-  [1]: https://github.com/chengjk/deployKit/RELEASE.md
+  [1]: https://github.com/chengjk/deployKit/blob/master/RELEASE.md
   [2]: https://eternallybored.org/misc/wget/
   [3]: https://github.com/chengjk/deployKit/releases
