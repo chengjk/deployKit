@@ -87,6 +87,7 @@ Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效
 
 实例中展示了如何把web.tar的v0.8版本从本地磁盘"./upload/web.tar"部署到82和83两个环境中.
 如果web.tar在内网服务器上，则可设置 `-lurl`替代`-path` 为 
+
 ```diff
 - "path": "./upload/{name}.tar",
 + "lurl": "http://localserver/{project}/{tag}/{name}.tar",
@@ -130,16 +131,19 @@ tar -zcvf ./upload/web.tar.gz ./upload/web.tar
     ./dk -tag=v0.8.6
     ```
 3. 多项目。为每个项目制作配置文件，如a.json,b.json。运行命令时指定 `-name`参数。
+
     ```shell
     ./dk -name=a -tag=v0.2
     ./dk -name=b -tag=v0.1
     ```
 
 3. 特殊用法。从局域网中下载后在上传服务器之前希望做一些处理，把这些所有写成脚本。更好的办法是让这个脚本可以接受一个参数作为版本，使用起来就像是：
+
     ```sh
     deploy.sh v1.0.0
     ```
 或者运行过程中输入参数。例：
+
     ```sh
     #!/usr/bin/env bash
     tag=""

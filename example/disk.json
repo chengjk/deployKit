@@ -1,23 +1,24 @@
 {
-  "name": "ec-web",
-  "version": "",
+  "name": "disk",
+  "tag": "",
   "url": "",
   "path": "./upload/walle-web.tar.gz",
   "lurl": "",
-  "suffixCmd": "mkdir {version};tar -zxvf walle-web.tar.gz -C ./{version};rm -f walle-web.tar.gz",
+  "prefixCmd":"mkdir {tag}",
+  "suffixCmd": "tar -zxvf walle-web.tar.gz -C ./{tag};rm -f walle-web.tar.gz",
   "servers": [
     {
       "ip": "172.30.10.82",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxxxx",
       "workDir": "/tmp/jacky"
     },
     {
       "ip": "172.30.10.83",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxxxx",
       "workDir": "/tmp/jacky"
     }
   ]

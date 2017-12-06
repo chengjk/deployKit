@@ -1,23 +1,24 @@
 {
-  "name": "ec-web",
-  "tag": "test_ec_inter_003",
+  "name": "ec",
+  "tag": "",
   "url": "",
   "path": "",
   "lurl": "http://172.30.10.171/FacebookPMD/EC/snapshots/{tag}/walle-web.tar",
-  "suffixCmd": "tar -xvf walle-web.tar;mkdir {tag};tar -xvf ./walle-web/walle-web.tar -C ./{tag};rm -rf walle-web walle-web.tar*;",
+  "prefixCmd":"mkdir {tag}",
+  "suffixCmd": "tar -zxvf walle-web.tar.gz;tar -xvf walle-web.tar ;tar -xvf ./walle-web/walle-web.tar -C {tag};rm -rf walle-web walle-web.*;",
   "servers": [
     {
       "ip": "172.30.10.82",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxx",
       "workDir": "/tmp/jacky"
     },
     {
       "ip": "172.30.10.83",
       "port": 22,
       "username": "root",
-      "password": "12354",
+      "password": "xxx",
       "workDir": "/tmp/jacky"
     }
   ]
