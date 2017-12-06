@@ -3,17 +3,20 @@
 tags： tool
 
 ---
+
 DeployKit，部署工具,一个命令形式的可执行程序`dk`。在实际应用上线是再平常不过的事了，目前的一些平台工具可以覆盖大部分的上线工作，可是还是有一丢丢需要手动操作，这里就是来解决这部分问题的。
+
+[Release Note][1]
 
 ## 起步
 这些任务概括起来是把一个包部署到一组服务器，然后执行一些脚本，具体过程类似：1.上传，2 解压。文件包最可能在的几个地方：
 
 1. 本地磁盘。需要上传服务器.并执行相应命令。
-2. 公网地址。生产服务器可以访问，直接在服务器上 `wget`[wget for win][1]就可以获得。
+2. 公网地址。生产服务器可以访问，直接在服务器上 `wget`[wget for win][2]就可以获得。
 3. 内网地址。生产服务器不能访问，需要先下载到本地磁盘再上传到服务器。
 
 ### 安装
-运行根目录`install.sh`可将项目打包成可执行程序到`./bin`目录。不同操作系统需要在各自的GO环境下安装。或者直接下载可执行文件。
+运行根目录`install.sh`可将项目打包成可执行程序到`./bin`目录。不同操作系统需要在各自的GO环境下安装。或者直接从[github][3]下载可执行文件。
 
 ### 使用
 
@@ -41,8 +44,8 @@ Usage of E:\github\deployKit\bin\dk.exe:
 Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.
 
 ```
-> `./dk -h` 可查看Usage。
-`./dk -v` 可查看当前版本号。
+> `./dk -h` 查看Usage。
+`./dk -v` 查看当前版本号。
 
 配置文件`config.json`和dk.exe 同目录，自定义配置文件名时需要在`-name`参数中传入。结构如下：
 
@@ -180,8 +183,10 @@ tar -zcvf ./upload/web.tar.gz ./upload/web.tar
     exit 0
     
     ```
-        
+  
 以上。
 
 
-  [1]: https://eternallybored.org/misc/wget/
+  [1]: https://github.com/chengjk/deployKit/RELEASE.md
+  [2]: https://eternallybored.org/misc/wget/
+  [3]: https://github.com/chengjk/deployKit/releases
