@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	//解析命令行参数
 	cmdParam, err := cmdparam.Parse()
 	if err != nil {
 		log.Fatal(err)
@@ -23,7 +24,12 @@ func main() {
 		print("develop kit version: " + model.Version)
 		return
 	}
-	cmdParam, config := mergeCfgFile(cmdParam)
+	if cmdParam.Name == "" {
+		cmdParam.Name = "config"
+	}
+	//解析配置文件
+	config := parseConfig(cmdParam.Name)
+	cmdParam = mergeCfgFile(cmdParam, config)
 	if cmdparam.Verify(cmdParam) {
 		//deploy to servers
 		for _, server := range config.Servers {
@@ -35,11 +41,13 @@ func main() {
 		cmdparam.ShowUsage()
 	}
 }
-func mergeCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
-	if cmdParam.Name == "" {
-		cmdParam.Name = "config"
+
+//合并命令行参数和配置文件
+func mergeCfgFile(cmdParam model.CmdParam, config *model.Config) (model.CmdParam) {
+	//配置文件名应该和 其中 name值一致。如果不一致，已配置文件里为准
+	if config.Name != "" && cmdParam.Name != config.Name {
+		cmdParam.Name = config.Name
 	}
-	config := parseConfig(cmdParam.Name)
 	if cmdParam.Url == "" {
 		cmdParam.Url = config.Url
 	}
@@ -58,7 +66,7 @@ func mergeCfgFile(cmdParam model.CmdParam) (model.CmdParam, *model.Config) {
 	if cmdParam.SuffixCmd == "" {
 		cmdParam.SuffixCmd = config.SuffixCmd
 	}
-	return cmdParam, config
+	return cmdParam
 }
 
 func parseConfig(cfgFileName string) *model.Config {
