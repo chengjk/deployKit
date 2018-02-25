@@ -15,3 +15,4 @@ pkg/
 **/upload*/*
 /src/*
 !/src/ndp
+bin/
