@@ -75,7 +75,7 @@ func parseConfig(cfgFileName string) *model.Config {
 }
 
 func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
-	sshClient, err := common.Connect(server.Username, server.Password, server.Host, server.Port)
+	sshClient, err := common.Connect(server)
 	if err != nil {
 		log.Fatal(err)
 	}

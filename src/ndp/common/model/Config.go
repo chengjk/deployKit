@@ -1,11 +1,12 @@
 package model
 
 type ServerInfo struct {
-	Host     string `json:"ip"`
-	Port     int    `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	WorkDir  string `json:"workDir"`
+	Host      string `json:"ip"`
+	Port      int    `json:"port"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	PublicKey string `json:"publicKey"`
+	WorkDir   string `json:"workDir"`
 }
 type Config struct {
 	Name      string       `json:"name"`
