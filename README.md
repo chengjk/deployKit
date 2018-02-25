@@ -1,4 +1,4 @@
-# Deploy Kit 
+# Deploy Kit
 
 tags： tool
 
@@ -63,14 +63,16 @@ Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效
       "ip": "172.30.10.82",
       "port": 22,
       "username": "root",
-      "password": "xxxxx",
+      "password": "", //password is empty. use publicKey.
+      "publicKey":"./a.pem", //defalut ~/.ssh/id_rsa
       "workDir": "/tmp/jacky"
     },
     {
       "ip": "172.30.10.83",
       "port": 22,
       "username": "root",
-      "password": "xxxxx",
+      "password": "xxxxx", //password is not empty. use password.
+      "publicKey":"",
       "workDir": "/tmp/jacky"
     }
   ]
@@ -86,10 +88,10 @@ Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效
 - suffixCmd 对应参数`-scmd` 文件上传后在workDir中执行，分号隔开.
 - servers是目标服务器信息列表，没有参数对应。
 
-**如果参数在配置文件和命令行都有设置，优先使用命令行。**
+** 如果参数在配置文件和命令行都有设置，优先使用命令行。**
 
 实例中展示了如何把web.tar的v0.8版本从本地磁盘"./upload/web.tar"部署到82和83两个环境中.
-如果web.tar在内网服务器上，则可设置 `-lurl`替代`-path` 为 
+如果web.tar在内网服务器上，则可设置 `-lurl`替代`-path` 为
 
 ```diff
 - "path": "./upload/{name}.tar",
@@ -150,13 +152,13 @@ tar -zcvf ./upload/web.tar.gz ./upload/web.tar
     ```sh
     #!/usr/bin/env bash
     tag=""
-    
+
     if [ ! $tag ]; then
     	read -p "please enter tag name :" tag
     	tag=$tag
     fi
     echo  "tag name is $tag."
-    
+
     # dwonload
     if [  -f "./upload/web.tar" ] ; then
     	echo "target file already exsit, redownload?(y/n)"
@@ -168,25 +170,25 @@ tar -zcvf ./upload/web.tar.gz ./upload/web.tar
     else
       wget -P ./upload http://172.30.10.171/FacebookPMD/EC/snapshots/$tag/web.tar
     fi
-    
+
     # do sth
     cd ./upload
     tar -zcvf web.tar.gz web.tar
     cd ..
-    
+
     # execute
     ./dk -name=ec -tag=$tag -path=./upload/web.tar.gz
-    
+
     read -s -n 1 -p "Press any key to exit..."
     echo
     echo bye...
     exit 0
-    
+
     ```
-  
+
 以上。
 
 
-  [1]: https://github.com/chengjk/deployKit/blob/master/RELEASE.md
+  [1]: https://github.com/chengjk/deployKit/RELEASE.md
   [2]: https://eternallybored.org/misc/wget/
   [3]: https://github.com/chengjk/deployKit/releases

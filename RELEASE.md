@@ -1,3 +1,16 @@
+
+## v1.2
+ssh 增加 PublicKey 认证方式。
+配置文件 server配置中增加 publicKey 选项。
+
+认证顺序：
+
+1. 有password 就用password 认证。
+2. 否则检查 publicKey选项,用指定的私钥认证，
+3. 如果还没有，使用用户目录 `~/.ssh/id_rsa`,
+4. 如果依然没有，不能通过认证.
+
+
 ## v1.1
 更新参数
 
