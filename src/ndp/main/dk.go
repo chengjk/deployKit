@@ -21,7 +21,7 @@ func main() {
 		return
 	}
 	if cmdParam.ShowVersion {
-		print("develop kit version: " + model.Version)
+		println("develop kit version: " + model.Version)
 		return
 	}
 	if cmdParam.Name == "" {
