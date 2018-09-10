@@ -1,19 +1,19 @@
 {
-  "name": "ec-web",
+  "name": "no-upload-test",
   "tag": "v1.0",
   "url": "",
-  "path": "./upload/a.zip",
+  "path": "",
   "lurl": "",
   "prefixCmd": "mkdir {name}",
   "suffixCmd": "mkdir {tag}",
   "servers":
    [
     {
-      "ip": "47.104.148.178",
+      "ip": "172.30.10.216",
       "port": 22,
-      "username": "root",
+      "username": "ubuntu",
       "password": "",
-      "publicKey":"exchange-key.pem",
+      "publicKey":"dev.pem",
       "workDir": "/tmp/jacky"
     }
   ]

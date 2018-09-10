@@ -1,18 +1,19 @@
 package common
 
 import (
+	"bufio"
 	"fmt"
 	"golang.org/x/crypto/ssh"
-	"time"
 	"io/ioutil"
 	"log"
+	"ndp/common/model"
 	"os"
 	"path/filepath"
-	"bufio"
 	"strings"
-	"ndp/common/model"
+	"time"
 )
 
+//连接服务器
 func Connect(server model.ServerInfo) (*ssh.Client, error) {
 	if server.Password != "" {
 		return ConnPassword(server.Username, server.Password, server.Host, server.Port)
@@ -24,6 +25,7 @@ func Connect(server model.ServerInfo) (*ssh.Client, error) {
 	return ConnPublicKey(server.Username, server.PublicKey, server.Host, server.Port)
 }
 
+//用户名密码连接
 func ConnPassword(user, password, host string, port int) (*ssh.Client, error) {
 	var (
 		auth         []ssh.AuthMethod
@@ -49,6 +51,7 @@ func ConnPassword(user, password, host string, port int) (*ssh.Client, error) {
 	return sshClient, nil
 }
 
+//PublicKey连接
 func ConnPublicKey(user, keyPath, host string, port int) (*ssh.Client, error) {
 	//先检查hostKey
 	var hostKey = getHostKey(host)

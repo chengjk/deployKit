@@ -1,4 +1,4 @@
-package cmdhelper
+package cmder
 
 import (
 	"golang.org/x/crypto/ssh"

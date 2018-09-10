@@ -1,4 +1,4 @@
-package cmdparam
+package cmder
 
 import (
 	"flag"
@@ -35,15 +35,15 @@ func Parse() (model.CmdParam, error) {
 func ShowUsage(){
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
-	fmt.Println("")
-	fmt.Println("Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.")
+	//fmt.Println("")
+	//fmt.Println("Tips: url,path,和lurl三个参数互斥,按照上述顺序检查到一个有效值时停止,否则报错.")
 }
 
 func Verify(cmdParam model.CmdParam)(bool) {
-	if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
-		log.Fatal("one and only one of url,lurl or path is required!")
-		return false
-	}
+	//if cmdParam.Url == "" && cmdParam.LocalUrl == "" && cmdParam.Path == "" {
+	//	log.Fatal("one and only one of url,lurl or path is required!")
+	//	return false
+	//}
 	if cmdParam.Tag == "" {
 		log.Fatal("project tag is required!")
 		return false

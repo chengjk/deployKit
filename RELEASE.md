@@ -1,4 +1,7 @@
 
+## v1.3
+取消 path，url，lurl 三者之一必须传值的限制。应用场景：只想在远程服务器执行一些代码，并不上传任何东西。
+
 ## v1.2
 ssh 增加 PublicKey 认证方式。
 配置文件 server配置中增加 publicKey 选项。

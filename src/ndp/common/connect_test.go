@@ -22,7 +22,7 @@ func TestConnectPassword(t *testing.T) {
 
 //public key
 func TestConnPublicKey(t *testing.T) {
-	client, err := ConnPublicKey("root", "", "47.104.148.178", 22)
+	client, err := ConnPublicKey("ubuntu", "~/.ssh/dev.pem", "172.30.10.216", 22)
 	if err != nil {
 		log.Fatalf("unable to connect: %v", err)
 	}
