@@ -44,25 +44,32 @@ func deploy(cmdParam model.CmdParam, server model.ServerInfo) {
 	}
 	model.ReplaceVar(&cmdParam)
 	//exe prefix cmd
-	cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.PrefixCmd})
+	cmder.ExecRemote(sshClient, []string{"cd " + server.WorkDir,cmdParam.PrefixCmd})
+
 	//upload and exe suffix cmd
+	var sufCmds = []string{"cd " + server.WorkDir}
 	if cmdParam.Url != "" {
 		log.Println("from internet repository :" + cmdParam.Url)
-		cmder.ExecRemote(sshClient, server.WorkDir, []string{
+		sufCmds = append(sufCmds, []string{
 			"wget " + cmdParam.Url,
-			cmdParam.SuffixCmd})
+			cmdParam.SuffixCmd}...)
+		//cmder.ExecRemote(sshClient, server.WorkDir, sufCmds)
 	} else if cmdParam.Path != "" {
 		log.Println("from path :" + cmdParam.Path)
 		filehelper.Upload(sshClient, cmdParam.Path, server.WorkDir)
-		cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
+		sufCmds = append(sufCmds, []string{cmdParam.SuffixCmd}...)
+		//cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
 	} else if cmdParam.LocalUrl != "" {
 		log.Println("from local repository :" + cmdParam.LocalUrl)
 		localPath := filehelper.Download(cmdParam.LocalUrl)
 		log.Print("upload from " + localPath)
 		filehelper.Upload(sshClient, localPath, server.WorkDir)
-		cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
+		sufCmds = append(sufCmds, []string{cmdParam.SuffixCmd}...)
+		//cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
 	} else {
 		log.Println("nothing to upload,skip.")
-		cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
+		sufCmds = append(sufCmds, []string{cmdParam.SuffixCmd}...)
+		//cmder.ExecRemote(sshClient, server.WorkDir, []string{cmdParam.SuffixCmd})
 	}
+	cmder.ExecRemote(sshClient, []string{cmdParam.SuffixCmd})
 }

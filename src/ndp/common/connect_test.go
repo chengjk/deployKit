@@ -1,6 +1,7 @@
 package common
 
 import (
+	"strings"
 	"testing"
 	"log"
 	"path/filepath"
@@ -37,4 +38,17 @@ func TestConnPublicKey(t *testing.T) {
 func  TestPath(t *testing.T) {
 	p := filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts")
 	println(p)
+}
+
+func TestAppend(t *testing.T){
+	origin:=[]string{"a", "b"}
+	insert:=[]string{"c","d"}
+	strings := append(origin[:1], insert...)
+	log.Println(strings)
+}
+
+func TestJoin(t *testing.T){
+	arr:=[]string{"a","b"}
+	join := strings.Join(arr, ";")
+	log.Print(join)
 }
